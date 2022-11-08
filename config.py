@@ -1,7 +1,6 @@
 from re import search
 from re import sub
 from os import path
-from os import getcwd
 
 # Returns a dictionnary containing the properties of the scene
 def load_scene(filename="default.ffscene"):
