@@ -4,10 +4,10 @@ from os import path
 
 # Returns a dictionnary containing the properties of the scene
 def load_scene(filename="default.ffscene"):
-    # Check if the file exists
-    if path.exists(filename):
-        # Check if the file has the correct extension
-        if search(r"\.ffscene$",filename):
+    # Check if the file has the correct extension
+    if search(r"\.ffscene$",filename):
+        # Check if the file exists
+        if path.exists(filename):
             with open(filename,"r") as instream:
                 content = instream.readline()
                 # Check if the content contains cells, positions of players and obstacles
@@ -21,10 +21,10 @@ def load_scene(filename="default.ffscene"):
 
 # Returns a dictionnary containing the attributes of a player
 def load_player(filename):
-    # Check if the file exists
-    if path.exists(filename):
-        # Check if the file has the correct extension
-        if search(r"\.ffplayer$",filename):
+    # Check if the file has the correct extension
+    if search(r"\.ffplayer$",filename):
+        # Check if the file exists
+        if path.exists(filename):
             with open(filename,"r") as instream:
                 content = str(instream.readlines())
                 # Removing spaces, brackets, quotes from the content and splitting it to have lists containing a property and its value
