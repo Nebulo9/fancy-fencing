@@ -1,1 +1,1 @@
-from keyboard import add_hotkey
+from pynput import keyboard
