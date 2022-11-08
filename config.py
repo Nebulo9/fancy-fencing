@@ -1,5 +1,4 @@
 from re import search
-from re import MULTILINE
 from re import sub
 from os import path
 from os import getcwd
