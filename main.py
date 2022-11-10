@@ -1,4 +1,4 @@
 import config
 
-scene = config.load_scene()
-player_1 = config.load_player("./p1.ffplayer")
+scene_config = config.load_scene()
+player1_config = config.load_player("./p1.ffplayer")
