@@ -1,5 +1,4 @@
-from re import search
-from re import sub
+from re import search,sub
 from os import path
 
 # Returns a dictionnary containing the properties of the scene
@@ -33,5 +32,5 @@ def load_player(filename):
                 # Mapping the properties and their values into a dictionnary
                 for l in splitted:
                     player[l[0]] = float(l[1])
-                player["player"] = int(player["player"])
+                player["type"] = str(player["type"])
                 return player
