@@ -17,6 +17,15 @@ def load_scene(filename="default.ffscene"):
                     pos_obs = [i for i,char in enumerate(content) if char == 'x']
                     # Returning the dictionnary with the properties of the scene
                     return {"length":length, "pos_p1":pos_p1, "pos_p2":pos_p2, "pos_obs":pos_obs}
+        else:
+            with open(filename,"x") as outstream:
+                default_scene = "___1_____x__2___"
+                outstream.write(default_scene)
+                length = len(default_scene)
+                pos_p1 = default_scene.index("1")
+                pos_p2 = default_scene.index("2")
+                pos_obs = [i for i,char in enumerate(default_scene) if char == 'x']
+                return {"length":length, "pos_p1":pos_p1, "pos_p2":pos_p2, "pos_obs":pos_obs}
 
 # Returns a dictionnary containing the attributes of a player
 def load_player(filename):
