@@ -41,5 +41,5 @@ def load_player(filename):
                 # Mapping the properties and their values into a dictionnary
                 for l in splitted:
                     player[l[0]] = float(l[1])
-                player["type"] = str(player["type"])
+                player["player_type"] = str(player["player_type"])
                 return player
