@@ -1,4 +1,4 @@
-from re import search,sub,compile,MULTILINE
+from re import search,compile
 from os import path
 from json import load,JSONDecodeError
 from player import Player
@@ -6,7 +6,8 @@ from player import Player
 # Returns a dictionnary containing the properties of the scene
 def load_scene(filename="default.ffscene"):
     # Check if the file has the correct extension
-    if search(r"\.ffscene$",filename):
+    pattern = compile(r"\.ffscene$")
+    if search(pattern,filename):
         # Check if the file exists
         if path.exists(filename):
             with open(filename,"r") as instream:
