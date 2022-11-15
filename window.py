@@ -4,14 +4,14 @@ import math
 class GWin:
     __stdscr = curses.initscr()
     def __init__(self,__color_pairs):
-        self.color_pairs = __color_pairs
+        self.__color_pairs = __color_pairs
     
     def create(self):
         self.__start_session()
         for pair in self.color_pairs:
             curses.init_pair(pair["number"],pair["fg"],pair["bg"])
-        self.conf = {"height": curses.LINES,"width": curses.COLS,"center":(math.floor(curses.COLS/2.0),math.floor(curses.LINES/2.0)),"caption": "Fency Fencing"}
-        self.win = curses.newwin(self.conf["height"],self.conf["width"],0,0)
+        self.__conf = {"height": curses.LINES,"width": curses.COLS,"center":(math.floor(curses.COLS/2.0),math.floor(curses.LINES/2.0)),"caption": "Fency Fencing"}
+        self.__win = curses.newwin(self.conf["height"],self.conf["width"],0,0)
         self.update_window(self.conf["caption"],x=(self.conf["center"][0] - math.floor(len(self.conf["caption"])/2.0)),attributes=(curses.color_pair(1) | curses.A_BOLD))
 
     def update_window(self,__str,x=0,y=0,attributes=[]):
@@ -27,30 +27,21 @@ class GWin:
         curses.curs_set(False)
         if curses.has_colors():
             curses.start_color()
-        self.__stdscr.keypad(True)
+        GWin.__stdscr.keypad(True)
     
     def end(self):
         curses.echo()
         curses.nocbreak()
         curses.curs_set(True)
-        self.__stdscr.keypad(False)
+        GWin.__stdscr.keypad(False)
         curses.endwin()
     
     @property
     def color_pairs(self):
         return self.__color_pairs
-    @color_pairs.setter
-    def color_pairs(self,color_pairs):
-        self.__color_pairs = color_pairs
     @property
     def conf(self):
         return self.__conf
-    @conf.setter
-    def conf(self,conf):
-        self.__conf = conf
     @property
     def win(self):
         return self.__win
-    @win.setter
-    def win(self,win):
-        self.__win = win
