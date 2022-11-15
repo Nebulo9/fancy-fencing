@@ -1,9 +1,9 @@
 import curses
 import math
-from copy import deepcopy
+from copy import deepcopy,copy
 
 class GWin:
-    # __stdscr = curses.initscr()
+    __stdscr = curses.initscr()
     def __init__(self,__color_pairs):
         self.__color_pairs = __color_pairs
     
