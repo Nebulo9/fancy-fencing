@@ -1,6 +1,7 @@
 from re import search,sub,compile,MULTILINE
 from os import path
 from json import load,JSONDecodeError
+from player import Player
 
 # Returns a dictionnary containing the properties of the scene
 def load_scene(filename="default.ffscene"):
@@ -38,8 +39,8 @@ def load_player(filename):
             with open(filename,"r") as instream:
                 # Returns a dict containing the player configuration
                 try:
-                    player = load(instream)
-                    return player
+                    p = load(instream)
+                    return Player(p["player_type"],p["movement_speed"],p["attacking_range"],p["defending_range"],p["blocking_time"])
                 except JSONDecodeError:
                     print(f"Wrong syntax in {filename}, must be written like JSON")
                     exit()
