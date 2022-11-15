@@ -2,6 +2,7 @@ from re import search,compile
 from os import path
 from json import load,JSONDecodeError
 from player import Player
+from scene import Scene
 
 # Returns a dictionnary containing the properties of the scene
 def load_scene(filename="default.ffscene"):
@@ -15,21 +16,12 @@ def load_scene(filename="default.ffscene"):
                 # Check if the content contains cells, positions of players and obstacles
                 pattern = compile(r"^(_|x)+|1|2$")
                 if search(pattern,content):
-                    length = len(content)
-                    pos_p1 = content.index("1")
-                    pos_p2 = content.index("2")
-                    pos_obs = [i for i,char in enumerate(content) if char == 'x']
-                    # Returning the dictionnary with the properties of the scene
-                    return {"length":length, "pos_p1":pos_p1, "pos_p2":pos_p2, "pos_obs":pos_obs}
+                    return Scene(content)
         else:
             with open(filename,"x") as outstream:
                 default_scene = "___1_____x__2___"
                 outstream.write(default_scene)
-                length = len(default_scene)
-                pos_p1 = default_scene.index("1")
-                pos_p2 = default_scene.index("2")
-                pos_obs = [i for i,char in enumerate(default_scene) if char == 'x']
-                return {"length":length, "pos_p1":pos_p1, "pos_p2":pos_p2, "pos_obs":pos_obs}
+                return Scene(default_scene)
 
 # Returns a dictionnary containing the attributes of a player
 def load_player(filename):
