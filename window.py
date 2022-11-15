@@ -1,8 +1,9 @@
 import curses
 import math
+from copy import deepcopy
 
 class GWin:
-    __stdscr = curses.initscr()
+    # __stdscr = curses.initscr()
     def __init__(self,__color_pairs):
         self.__color_pairs = __color_pairs
     
@@ -38,10 +39,10 @@ class GWin:
     
     @property
     def color_pairs(self):
-        return self.__color_pairs
+        return deepcopy(self.__color_pairs)
     @property
     def conf(self):
-        return self.__conf
+        return copy(self.__conf)
     @property
     def win(self):
         return self.__win
