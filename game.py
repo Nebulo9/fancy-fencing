@@ -3,7 +3,7 @@ import curses
 import config
 
 class Game:
-    def __init__(self,player1_file,player2_file="",scene_file=""):
+    def __init__(self,player1_file,player2_file="",scene_file="default.ffscene"):
         self.__scene = config.load_scene(scene_file)
         self.__player1 = config.load_player(player1_file)
         if player2_file != "":
