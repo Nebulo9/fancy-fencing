@@ -14,7 +14,7 @@ def load_scene(filename="default.ffscene"):
             with open(filename,"r") as instream:
                 content = instream.readline()
                 # Check if the content contains cells, positions of players and obstacles
-                pattern = compile(r"^(_|x)+|1|2$")
+                pattern = compile(r"^(_+)1(_+)(x*)(_+)2(_+)$")
                 if search(pattern,content):
                     return Scene(content)
         else:
