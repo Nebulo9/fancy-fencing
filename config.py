@@ -9,19 +9,23 @@ def load_scene(filename="default.ffscene"):
     # Check if the file has the correct extension
     pattern = compile(r"\.ffscene$")
     if search(pattern,filename):
-        # Check if the file exists
+        scene = "___1_____x__2___"
+        # If the file exists, we read its contents
+        # Otherwise we use the default scene
         if path.exists(filename):
+            content = ""
             with open(filename,"r") as instream:
                 content = instream.readline()
-                # Check if the content contains cells, positions of players and obstacles
+            try:
+                # We check if the scene has a valid pattern
                 pattern = compile(r"^(_+)1(_+)(x*)(_+)2(_+)$")
-                if search(pattern,content):
-                    return Scene(content)
-        else:
-            with open(filename,"x") as outstream:
-                default_scene = "___1_____x__2___"
-                outstream.write(default_scene)
-                return Scene(default_scene)
+                if not search(pattern,content):
+                    raise Exception
+                else:
+                    scene = content
+            except Exception:
+                print("Wrong scene format. Using default value.")
+        return Scene(scene)
 
 # Returns a dictionnary containing the attributes of a player
 def load_player(filename):
