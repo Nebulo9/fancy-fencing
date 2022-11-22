@@ -1,6 +1,6 @@
 from copy import copy,deepcopy
 class Scene:
-    def __init__(self,pattern):
+    def __init__(self,pattern: str):
         self.__len = len(pattern)
         self.__p1 = pattern.index('1')
         self.__p2 = pattern.index('2')

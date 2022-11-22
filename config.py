@@ -3,41 +3,53 @@ from os import path
 from json import load,JSONDecodeError
 from player import Player
 from scene import Scene
+from exceptions import InvalidPattern,FileNotExists
 
-# Returns a dictionnary containing the properties of the scene
-def load_scene(filename="default.ffscene"):
-    # Check if the file has the correct extension
-    pattern = compile(r"\.ffscene$")
-    if search(pattern,filename):
-        scene = "___1_____x__2___"
-        # If the file exists, we read its contents
-        # Otherwise we use the default scene
-        if path.exists(filename):
-            content = ""
-            with open(filename,"r") as instream:
-                content = instream.readline()
-            try:
-                # We check if the scene has a valid pattern
-                pattern = compile(r"^(_+)1(_+)(x*)(_+)2(_+)$")
-                if not search(pattern,content):
-                    raise Exception
+def load_scene(filename=""):
+    """Returns a Scene instance"""
+    scene = "___1_____x__2___"
+    # Check if a filename is specified
+    if filename != "":
+        try:
+            # Check if the filename has a valid extension
+            pattern = compile(r"\.ffscene")
+            if search(pattern,filename):
+                # Check if the file existts
+                if path.exists(filename):
+                    content = ""
+                    with open(filename,"r") as instream:
+                        content = instream.readline()
+                    # Check if the content of the file matches a valid scene pattern
+                    pattern = compile(r"^(_+)(x|_)*1(x|_)*(_+)(x|_)*2(x|_)*(_+)$")
+                    if search(pattern,content):
+                        scene = content
+                    else:
+                        raise InvalidPattern("Wrong scene format. Using default value.")
                 else:
-                    scene = content
-            except Exception:
-                print("Wrong scene format. Using default value.")
-        return Scene(scene)
+                    raise FileNotExists(f"{filename} does not exist. Using default value")
+            else:
+                raise InvalidPattern("Wrong file extension. Using default value.")
+        except (InvalidPattern,FileNotExists) as e:
+            print(e)
+    return Scene(scene)
 
-# Returns a dictionnary containing the attributes of a player
-def load_player(filename):
-    # Check if the file has the correct extension
-    if search(r"\.ffplayer$",filename):
-        # Check if the file exists
-        if path.exists(filename):
-            with open(filename,"r") as instream:
-                # Returns a dict containing the player configuration
-                try:
+def load_player(filename: str):
+    """Returns an instance of a player by reading its properties in the dedicated file"""
+    p = {"player_type": "NONE","movement_speed":-1,"attacking_range":-1,"defending_range": -1,"blocking_time":-1}
+    try:
+        # Check if the file has a valid extension
+        pattern = compile(r"\.ffplayer$")
+        if search(pattern,filename):
+            # Check if the file exists
+            if path.exists(filename):
+                with open(filename,"r") as instream:
                     p = load(instream)
-                    return Player(p["player_type"],p["movement_speed"],p["attacking_range"],p["defending_range"],p["blocking_time"])
-                except JSONDecodeError:
-                    print(f"Wrong syntax in {filename}, must be written like JSON")
-                    exit()
+            else:
+                raise FileNotExists(f"{filename} does not exist.\nStopping...")
+        else:
+            raise InvalidPattern("Wrong file format.\nStopping...")
+    except (InvalidPattern,FileNotExists) as e:
+        print(e)
+    except JSONDecodeError:
+        print(f"Wrong syntax in {filename}, must be written like JSON.\nStopping...")
+    return Player(p["player_type"],p["movement_speed"],p["attacking_range"],p["defending_range"],p["blocking_time"])

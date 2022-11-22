@@ -1,7 +1,7 @@
 from copy import copy
 class Player:
-    def __init__(self,type,movement_speed,attacking_range,defending_range,blocking_time):
-        self.__type = type
+    def __init__(self,_type: str,movement_speed: float,attacking_range: float,defending_range: float,blocking_time: float):
+        self.__type = _type
         self.__ms = movement_speed
         self.__ar = attacking_range
         self.__dr = defending_range
@@ -9,23 +9,23 @@ class Player:
         self.__pos = -1
 
     @property
-    def type(self):
-        return copy(self.__type)
+    def player_type(self):
+        return self.__type
     @property
     def movement_speed(self):
-        return copy(self.__ms)
+        return self.__ms
     @property
     def attacking_range(self):
-        return copy(self.__ar)
+        return self.__ar
     @property
     def defending_range(self):
-        return copy(self.__dr)
+        return self.__dr
     @property
     def blocking_time(self):
-        return copy(self.__bt)
+        return self.__bt
     @property
     def pos(self):
-        return copy(self.__pos)
+        return self.__pos
     @pos.setter
     def pos(self, pos):
         self.__pos = pos

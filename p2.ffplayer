@@ -1,5 +1,5 @@
 {
-    "player_type": "1",
+    "player_type": "2",
     "movement_speed": 0.4,
     "attacking_range": 1,
     "defending_range": 1, 
