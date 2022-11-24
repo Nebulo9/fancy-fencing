@@ -74,11 +74,11 @@ class Body:
         self.__midtop = midtop
     
     def change(self,state):
-        if state == "Rest":
+        if state == "rest":
             self.midtop.part = "|_/"
-        elif state == "Attacking":
+        elif state == "attacking":
             self.midtop.part = "|__"
-        elif state == "Blocking":
+        elif state == "blocking":
             self.midtop.part = "|_|"
 
 class BodyPart:
