@@ -1,4 +1,3 @@
-from copy import copy,deepcopy
 class Scene:
     def __init__(self,pattern: str):
         self.__len = len(pattern)
@@ -8,13 +7,13 @@ class Scene:
     
     @property
     def length(self):
-        return copy(self.__len)
+        return self.__len
     @property
     def pos_p1(self):
-        return copy(self.__p1)
+        return self.__p1
     @property
     def pos_p2(self):
-        return copy(self.__p2)
+        return self.__p2
     @property
     def pos_obs(self):
-        return deepcopy(self.__obs)
+        return self.__obs

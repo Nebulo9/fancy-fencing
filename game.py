@@ -46,18 +46,22 @@ class Game:
         self.win.end()
 
     def _diplay_start(self,start_pos_scene):
+        # Scene
         self.win.update_window("=" * (self.scene.length),x=start_pos_scene,y=curses.LINES-1)
+        
         # Player 1
         self.player1.pos = start_pos_scene + self.scene.pos_p1
         self.win.update_window("1",start_pos_scene + self.scene.pos_p1,y=curses.LINES-2)
+
         # Player 2
         self.player2.pos = start_pos_scene + self.scene.pos_p2
         self.win.update_window("2",start_pos_scene + self.scene.pos_p2,y=curses.LINES-2)
+        
         # Obstacles
         for i in self.scene.pos_obs:
             self.win.update_window("x",start_pos_scene + i,curses.LINES-2)
 
-    def _move_right(self,player):
+    def _move_right(self,player): 
         self.win.update_window(" ",player.pos,y=curses.LINES-2)
         player.pos += 1
         self.win.update_window(player.player_type,player.pos,y=curses.LINES-2)
