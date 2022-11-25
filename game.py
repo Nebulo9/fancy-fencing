@@ -1,6 +1,7 @@
 import window
 import curses
 import config
+from threading import Thread
 
 class Game:
     def __init__(self,fps: int,player1_file: str,player2_file="",scene_file=""):
@@ -19,21 +20,29 @@ class Game:
             self._diplay_start(start_pos_scene)
             obs = [i+start_pos_scene for i in self.scene.pos_obs]
             while True:
-                c = self.win.win.getch()
                 pos_p1 = self.player1.pos
                 pos_p2 = self.player2.pos
+                c = self.win.win.getch()
                 if chr(c) == 'd':
-                    if (pos_p1+1 < pos_p2) and (pos_p1+1 not in obs):
+                    if (pos_p1+3 < pos_p2-2) and (pos_p1+1 not in obs):
                         self._move_right(self.player1)
                 elif chr(c) == 'q':
-                    if (pos_p1-1 > start_pos_scene-1) and (pos_p1-2 not in obs):
+                    if (pos_p1-2 > start_pos_scene-1) and (pos_p1-2 not in obs):
                         self._move_left(self.player1)
+                elif chr(c) == 'z':
+                    self._change_state(self.player1,"attacking")
+                elif chr(c) == 'c':
+                    self._change_state(self.player1,"blocking")
                 elif c == curses.KEY_RIGHT:
-                    if (pos_p2+1 < end_pos_scene) and (pos_p2+2 not in obs):
+                    if (pos_p2+2 < end_pos_scene) and (pos_p2+2 not in obs):
                         self._move_right(self.player2)
                 elif c == curses.KEY_LEFT:
-                    if (pos_p2-1 > pos_p1) and (pos_p2-1 not in obs):
+                    if (pos_p2-3 > pos_p1 + 2) and (pos_p2-1 not in obs):
                         self._move_left(self.player2)
+                elif chr(c) == 'o':
+                    self._change_state(self.player2,"attacking")
+                elif chr(c) == 'p':
+                    self._change_state(self.player2,"blocking")
                 elif chr(c) == 'g':
                     break
         except Exception as e:
@@ -81,6 +90,10 @@ class Game:
     def _move_left(self,player):
         self._display_clear(player)
         player.pos -= 1
+        self._display_player(player)
+    
+    def _change_state(self, player,state: str):
+        player.state = state
         self._display_player(player)
 
     @property
