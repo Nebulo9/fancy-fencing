@@ -7,7 +7,7 @@ class Player:
         self.__dr = defending_range
         self.__bt = blocking_time
         self.__state = "rest"
-        self.__pos = -1
+        self.__pos = 0
         self.__body = Body(self.player_type,self.pos)
 
     @property
@@ -41,6 +41,15 @@ class Player:
     @pos.setter
     def pos(self, pos):
         self.__pos = pos
+        self.body.head.pos = self.pos - self.body.head.length//2
+        if self.player_type == "1":
+            self.body.midtop.pos = self.pos
+            self.body.midlow.pos = self.pos
+            self.body.foot.pos = self.pos -1
+        else:
+            self.body.midtop.pos = self.pos - 2
+            self.body.midlow.pos = self.pos
+            self.body.foot.pos = self.pos
 
 class Body:
     def __init__(self,_type: str,pos: int):
@@ -50,9 +59,9 @@ class Body:
         self.__midlow = BodyPart(pos,"|")
         if(self.player_type == "1"):
             self.__foot = BodyPart(pos-1,"/|")
-            self.__midtop = BodyPart(pos-2,"|_/")
+            self.__midtop = BodyPart(pos,"|_/")
         else:
-            self.__foot = BodyPart(pos-1,"|\\")
+            self.__foot = BodyPart(pos,"|\\")
             self.__midtop = BodyPart(pos-2,"\\_|")
     @property
     def player_type(self):
@@ -74,10 +83,17 @@ class Body:
         self.__midtop = midtop
     
     def change(self,state):
+        """Changes the value of the midtop part string depending on the state"""
         if state == "rest":
-            self.midtop.part = "|_/"
+            if self.player_type == "1":
+                self.midtop.part = "|_/"
+            else:
+                self.midtop.part = "\\_|"
         elif state == "attacking":
-            self.midtop.part = "|__"
+            if self.player_type == "1":
+                self.midtop.part = "|__"
+            else:
+                self.midtop.part = "__|"
         elif state == "blocking":
             self.midtop.part = "|_|"
 
@@ -85,6 +101,9 @@ class BodyPart:
     def __init__(self,pos: int,part: str):
         self.__pos = pos
         self.__part = part
+    @property
+    def length(self):
+        return len(self.__part)
     @property
     def pos(self):
         return self.__pos

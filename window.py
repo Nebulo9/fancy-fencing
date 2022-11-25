@@ -1,6 +1,4 @@
 import curses
-import math
-from copy import deepcopy,copy
 
 class GWin:
     def __init__(self,__color_pairs: list[dict[str,int]]):
@@ -14,7 +12,7 @@ class GWin:
         self.__conf = {"height": curses.LINES,"width": curses.COLS,"center":(curses.COLS//2,curses.LINES//2),"caption": "Fency Fencing"}
         self.update_window(self.conf["caption"],x=(self.conf["center"][0] - len(self.conf["caption"])//2),attributes=(curses.color_pair(1) | curses.A_BOLD))
 
-    def update_window(self,__str: str,x=0,y=0,attributes=[]):
+    def update_window(self,__str: str,x=0,y=0,attributes=0):
         if attributes:
             self.win.addstr(y,x,__str,attributes)
         else:
