@@ -18,7 +18,7 @@ class Game:
         # Ground/Scene
         try:
             self._diplay_start(start_pos_scene)
-            obs = [i+start_pos_scene for i in self.scene.pos_obs]
+            self.__obs = [i+start_pos_scene for i in self.scene.pos_obs]
             while True:
                 pos_p1 = self.player1.pos
                 pos_p2 = self.player2.pos
@@ -81,7 +81,19 @@ class Game:
         # Obstacles
         for i in self.scene.pos_obs:
             self.win.update_window("x",start_pos_scene + i,curses.LINES-2)
-
+    
+    def _action(self,player,key: int,scene_bounds: tuple[int,int]):
+        if player.player_type == "1":
+            pos_p = player.pos
+            pos_p2 = self.player2.pos
+            if chr(key) == 'd':
+                if (pos_p + 3 < pos_p2 - 2) and (pos_p + 1 not in self.obs):
+                    self._move_right(player)
+            elif chr(key) == 'a':
+                if (pos_p -2 > )
+        else:
+        
+            
     def _move_right(self,player): 
         self._display_clear(player)
         player.pos += 1
@@ -108,3 +120,6 @@ class Game:
     @property
     def win(self):
         return self.__win
+    @property
+    def obs(self):
+        return self.__obs
