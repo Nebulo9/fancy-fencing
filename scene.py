@@ -1,5 +1,5 @@
 class Scene:
-    def __init__(self,pattern: str):
+    def __init__(self,pattern):
         self.__len = len(pattern)
         self.__p1 = pattern.index('1')
         self.__p2 = pattern.index('2')

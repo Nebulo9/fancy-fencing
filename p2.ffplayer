@@ -1,6 +1,6 @@
 {
     "player_type": "2",
-    "movement_speed": 0.4,
+    "movement_speed": 1.2,
     "attacking_range": 1,
     "defending_range": 1, 
     "blocking_time": 2.4

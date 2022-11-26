@@ -33,7 +33,7 @@ def load_scene(filename=""):
             print(e)
     return Scene(scene)
 
-def load_player(filename: str):
+def load_player(filename):
     """Returns an instance of a player by reading its properties in the dedicated file"""
     p = {"player_type": "NONE","movement_speed":-1,"attacking_range":-1,"defending_range": -1,"blocking_time":-1}
     try:
