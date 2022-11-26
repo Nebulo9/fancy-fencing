@@ -1,35 +1,45 @@
 import curses
-import math
 
-def start_session():
-    curses.noecho()
-    curses.cbreak()
-    curses.curs_set(False)
-    if curses.has_colors():
-        curses.start_color()
-    stdscr.keypad(True)
+class GWin:
+    def __init__(self,__color_pairs):
+        self.__color_pairs = __color_pairs
+        self.__win = curses.initscr()
+    
+    def create(self):
+        self.__start_session()
+        for pair in self.color_pairs:
+            curses.init_pair(pair["number"],pair["fg"],pair["bg"])
+        self.__conf = {"height": curses.LINES,"width": curses.COLS,"center":(curses.COLS//2,curses.LINES//2),"caption": "Fency Fencing"}
+        self.update_window(self.conf["caption"],x=(self.conf["center"][0] - len(self.conf["caption"])//2),attributes=(curses.color_pair(1) | curses.A_BOLD))
 
-def create_window(color_pairs,width=0,height=0):
-    for pair in color_pairs:
-        curses.init_pair(pair["number"],pair["fg"],pair["bg"])
-    window_config = {}
-    if width < 1 and height < 1:
-        window_config = {"height":curses.LINES,"width":curses.COLS,"center":{"x":math.floor(curses.COLS/2.0),"y":math.floor(curses.LINES/2.0)},"caption":"Fency Fencing"}
-    else:
-        window_config = {"height":height,"height":width,"center":{"x":math.floor(width/2.0),"y":math.floor(height/2.0)},"caption":"Fency Fencing"}
-    win = curses.newwin(window_config["height"],window_config["width"],0,0)
-    win.addstr(0, window_config["center"]["x"] - math.floor(len(window_config["caption"])/2),window_config["caption"],curses.color_pair(1) | curses.A_BOLD)
-    win.refresh()
-    return win
-
-def update_window(x,y,str,win):
-    win.addstr(y,x,str)
-
-def end_session():
-    curses.echo()
-    curses.nocbreak()
-    curses.curs_set(True)
-    stdscr.keypad(False)
-    curses.endwin()
-
-stdscr = curses.initscr()
+    def update_window(self,__str: str,x=0,y=0,attributes=0):
+        if attributes:
+            self.win.addstr(y,x,__str,attributes)
+        else:
+            self.win.addstr(y,x,__str)
+        self.win.refresh()
+    
+    def __start_session(self):
+        curses.noecho()
+        curses.cbreak()
+        curses.curs_set(False)
+        if curses.has_colors():
+            curses.start_color()
+        self.__win.keypad(True)
+    
+    def end(self):
+        curses.echo()
+        curses.nocbreak()
+        curses.curs_set(True)
+        self.__win.keypad(False)
+        curses.endwin()
+    
+    @property
+    def color_pairs(self):
+        return self.__color_pairs
+    @property
+    def conf(self):
+        return self.__conf
+    @property
+    def win(self):
+        return self.__win
