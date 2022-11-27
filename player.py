@@ -1,4 +1,3 @@
-from copy import copy
 class Player:
     def __init__(self,_type,movement_speed,attacking_range,defending_range,blocking_time):
         self.__type = _type

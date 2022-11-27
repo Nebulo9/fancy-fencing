@@ -1,16 +1,16 @@
-from sys import argv
-from exceptions import IllegalArgument,ArgumentsNumber
-from game import Game
+import sys
+import exceptions
+import game
 
 if __name__ == "__main__":
     try:
-        if len(argv) == 1: raise ArgumentsNumber("You must provide a positive integer FPS value.")
-        fps = int(argv[1])
+        if len(sys.argv) == 1: raise exceptions.ArgumentsNumber("You must provide a positive integer FPS value.")
+        fps = int(sys.argv[1])
         if fps and fps > 0:
-            g = Game(fps,"./p1.ffplayer","./p2.ffplayer","./default.ffscene")
+            g = game.Game(fps,"./p1.ffplayer","./p2.ffplayer","./default.ffscene")
             g.start()
         else:
-            raise IllegalArgument("You must provide a positive integer FPS value.")
-    except (IllegalArgument,ArgumentsNumber) as e:
+            raise exceptions.IllegalArgument("You must provide a positive integer FPS value.")
+    except (exceptions.IllegalArgument,exceptions.ArgumentsNumber) as e:
         print(e)
         exit()
