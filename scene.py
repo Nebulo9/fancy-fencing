@@ -3,7 +3,7 @@ class Scene:
         self.__len = len(pattern)
         self.__p1 = pattern.index('1')
         self.__p2 = pattern.index('2')
-        self.__obs = [i for i,char in enumerate(pattern) if char == 'x']
+        self.__obs = tuple([i for i,char in enumerate(pattern) if char == 'x'])
     
     @property
     def length(self):

@@ -2,24 +2,26 @@ import time
 import window
 import curses
 import config
-import locale
 import threading
 
 class Game:
-    def __init__(self,fps,player1_file,player2_file="",scene_file=""):
+    def __init__(self,fps,player1_file,player2_file,scene_file="",save_file=""):
         self.__scene = config.load_scene(scene_file)
         self.__player1 = config.load_player(player1_file)
         self.__player2 = config.load_player(player2_file)
         self.__fps = 1/fps
-        locale.setlocale(locale.LC_ALL)
+        if save_file != "":
+            self.__loaded_from_save = True
+            self.__saved_conf = config.load_save(save_file)
+        self.__pause_elts = {"pause_text":"PAUSE","pause_cmds":"B: Resume - G: Quit - J: Save","p1_cmds":("Player 1","Q/D: Move left/right","A/E: Jump right/left","Z/S: Attack/Block"),"p2_cmds":("Player 2","LEFT_A/RIGHT_A: Move left/right","L/M: Jump right/left","O/P: Attack/Block")}
     
     def start(self):
-        pairs = [{"number": 1,"fg":curses.COLOR_WHITE,"bg":curses.COLOR_BLACK},{"number":2,"fg":curses.COLOR_RED,"bg":curses.COLOR_BLACK},{"number":3,"fg":curses.COLOR_GREEN,"bg":curses.COLOR_BLACK}]
+        pairs = ({"number": 1,"fg":curses.COLOR_WHITE,"bg":curses.COLOR_BLACK},{"number":2,"fg":curses.COLOR_RED,"bg":curses.COLOR_BLACK},{"number":3,"fg":curses.COLOR_GREEN,"bg":curses.COLOR_BLACK})
         self.__win = window.GWin(pairs)
         self.win.create()
         self.scene_start = (self.win.conf["center"][0]-(self.scene.length//2))
         self.scene_end = self.scene_start+self.scene.length
-        self.obs = [i+self.scene_start for i in self.scene.pos_obs]
+        self.obs = tuple([i+self.scene_start for i in self.scene.pos_obs])
         try:
             self._diplay_start(self.scene_start)
             self.paused = False
@@ -39,6 +41,8 @@ class Game:
                     else:
                         self.paused = True
                         self._display_pause()
+                elif chr(key) == 'j' and self.paused:
+                    self._save()
                 elif not self.paused:
                     t1.start()
                     t2.start()
@@ -54,35 +58,23 @@ class Game:
         self.win.end()
 
     def _display_pause(self):
-        pause_text = "PAUSE"
-        self.win.update_window(pause_text,self.win.conf["center"][0] - len(pause_text)//2,self.win.conf["center"][1]-1,curses.A_BOLD)
-        resume_quit_text = "B: Resume - G: Quit"
-        self.win.update_window(resume_quit_text,self.win.conf["center"][0] - len(resume_quit_text)//2,self.win.conf["center"][1])
+        self.win.update_window(self.pause_elts["pause_text"],self.win.conf["center"][0] - len(self.pause_elts["pause_text"])//2,self.win.conf["center"][1]-1,curses.A_BOLD)
+        self.win.update_window(self.pause_elts["pause_cmds"],self.win.conf["center"][0] - len(self.pause_elts["pause_cmds"])//2,self.win.conf["center"][1])
         # Controls
-        p1_horizontal = "Q/D: Move left/right"
-        p1_jump = "A/E: Jump right/left"
-        p1_actions = "Z/S: Attack/Block"
-        p2_horizontal = "LEFT_A/RIGHT_A: Move left/right"
-        p2_jump = "L/M: Jump right/left"
-        p2_actions = "O/P: Attack/Block"
-        p = "Player 1" + (" " * (curses.COLS-1-2*len("Player 1"))) + "Player 2"
-        p_hori = p1_horizontal + (" " * (curses.COLS-1-len(p1_horizontal)-len(p2_horizontal))) + p2_horizontal
-        p_jump = p1_jump + (" " * (curses.COLS-1-len(p1_jump)-len(p2_jump))) + p2_jump
-        p_actions = p1_actions + (" " * (curses.COLS-1-len(p1_actions)-len(p2_actions))) + p2_actions
-        self.win.update_window(p,0,curses.LINES//3-4)
-        self.win.update_window(p_hori,0,curses.LINES//3-3)
-        self.win.update_window(p_jump,0,curses.LINES//3-2)
-        self.win.update_window(p_actions,0,curses.LINES//3-1)
+        y=curses.LINES//3-4
+        self.win.update_window(self.pause_elts["p1_cmds"][0],0,y,curses.A_BOLD)
+        self.win.update_window(self.pause_elts["p2_cmds"][0],curses.COLS-1-len(self.pause_elts["p2_cmds"][0]),y,curses.A_BOLD)
+        for i in range(1,len(self.pause_elts["p1_cmds"])):
+            self.win.update_window(self.pause_elts["p1_cmds"][i],0,y+i)
+            self.win.update_window(self.pause_elts["p2_cmds"][i],curses.COLS-1-len(self.pause_elts["p2_cmds"][i]),y+i)
 
     def _clear_pause(self):
-        pause_text_len = len("PAUSE")
-        resume_quit_len = len("B: Resume - G: Quit")
-        self.win.update_window(" " * pause_text_len,self.win.conf["center"][0] - pause_text_len//2,self.win.conf["center"][1]-1)
-        self.win.update_window(" " * resume_quit_len,self.win.conf["center"][0] - resume_quit_len//2,self.win.conf["center"][1])
-        self.win.update_window(" " * (curses.COLS-1),0,curses.LINES//3-4)
-        self.win.update_window(" " * (curses.COLS-1),0,curses.LINES//3-3)
-        self.win.update_window(" " * (curses.COLS-1),0,curses.LINES//3-2)
-        self.win.update_window(" " * (curses.COLS-1),0,curses.LINES//3-1)
+        self.win.update_window(" " * len(self.pause_elts["pause_text"]),self.win.conf["center"][0] - len(self.pause_elts["pause_text"])//2,self.win.conf["center"][1]-1)
+        self.win.update_window(" " * len(self.pause_elts["pause_cmds"]),self.win.conf["center"][0] - len(self.pause_elts["pause_cmds"])//2,self.win.conf["center"][1])
+        line_length = curses.COLS-1
+        y = curses.LINES//3-4
+        for i in range(len(self.pause_elts["p1_cmds"])):
+            self.win.update_window(" " * line_length,0,y+i)
 
     def _display_player(self,player):
         base_y = curses.LINES-2
@@ -238,6 +230,13 @@ class Game:
         player.pos = (player.pos[0],player.pos[1]-1)
         self._display_player(player)
 
+    def _save(self):
+        conf  = {
+            "scene": {"length": self.scene.length, "obs": self.scene.pos_obs},
+            "player1": {""}
+        }
+        pass
+
     def _change_state(self, player,state):
         time.sleep(self.fps)
         player.state = state
@@ -282,3 +281,15 @@ class Game:
     @paused.setter
     def paused(self,paused):
         self.__paused = paused
+    @property
+    def loaded_from_save(self):
+        return self.__loaded_from_save
+    @loaded_from_save.setter
+    def loaded_from_save(self,loaded_from_save):
+        self.__loaded_from_save = loaded_from_save
+    @property
+    def pause_elts(self):
+        return self.__pause_elts
+    @pause_elts.setter
+    def pause_elts(self,pause_elts):
+        self.__pause_elts = pause_elts

@@ -1,3 +1,4 @@
+import copy
 class Player:
     def __init__(self,_type,movement_speed,attacking_range,defending_range,blocking_time):
         self.__type = _type
@@ -12,31 +13,31 @@ class Player:
 
     @property
     def player_type(self):
-        return self.__type
+        return copy.copy(self.__type)
     @property
     def movement_speed(self):
-        return self.__ms
+        return copy.copy(self.__ms)
     @property
     def attacking_range(self):
-        return self.__ar
+        return copy.copy(self.__ar)
     @property
     def defending_range(self):
-        return self.__dr
+        return copy.copy(self.__dr)
     @property
     def blocking_time(self):
-        return self.__bt
+        return copy.copy(self.__bt)
     @property
     def body(self):
         return self.__body
     @property
     def score(self):
-        return self.__score
+        return copy.copy(self.__score)
     @score.setter
     def score(self,score):
         self.__score = score
     @property
     def state(self):
-        return self.__state
+        return copy.copy(self.__state)
     @state.setter
     def state(self,state):
         self.__state = state
@@ -71,7 +72,7 @@ class Body:
             self.__midtop = BodyPart((pos[0]-2,pos[1]+2),"\\_|")
     @property
     def player_type(self):
-        return self.__type
+        return copy.copy(self.__type)
     @property
     def head(self):
         return self.__head
@@ -107,18 +108,19 @@ class BodyPart:
     def __init__(self,pos,part):
         self.__pos = pos
         self.__part = part
+        self.__length = len(self.part)
     @property
     def length(self):
-        return len(self.__part)
+        return copy.copy(self.__length)
     @property
     def pos(self):
-        return self.__pos
+        return copy.copy(self.__pos)
     @pos.setter
     def pos(self,pos):
         self.__pos = pos
     @property
     def part(self):
-        return self.__part
+        return copy.copy(self.__part)
     @part.setter
     def part(self,part):
         self.__part = part
