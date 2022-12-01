@@ -52,7 +52,6 @@ class Game:
                     t2.start()
                     t1.join()
                     t2.join()
-                    t3.join()
         except Exception as e:
             self.end()
             print(e)
@@ -63,10 +62,10 @@ class Game:
         self.win.end()
 
     def _display_pause(self):
-        self.win.update_window(self.pause_elts["pause_text"],self.win.conf["center"][0] - len(self.pause_elts["pause_text"])//2,self.win.conf["center"][1]-1,curses.A_BOLD)
-        self.win.update_window(self.pause_elts["pause_cmds"],self.win.conf["center"][0] - len(self.pause_elts["pause_cmds"])//2,self.win.conf["center"][1])
+        self.win.update_window(self.pause_elts["pause_text"],self.win.conf["center"][0] - len(self.pause_elts["pause_text"])//2,curses.LINES//3-1,curses.A_BOLD)
+        self.win.update_window(self.pause_elts["pause_cmds"],self.win.conf["center"][0] - len(self.pause_elts["pause_cmds"])//2,curses.LINES//3)
         # Controls
-        y=curses.LINES//3-4
+        y=curses.LINES//4-4
         self.win.update_window(self.pause_elts["p1_cmds"][0],0,y,curses.A_BOLD)
         self.win.update_window(self.pause_elts["p2_cmds"][0],curses.COLS-1-len(self.pause_elts["p2_cmds"][0]),y,curses.A_BOLD)
         for i in range(1,len(self.pause_elts["p1_cmds"])):
@@ -74,10 +73,10 @@ class Game:
             self.win.update_window(self.pause_elts["p2_cmds"][i],curses.COLS-1-len(self.pause_elts["p2_cmds"][i]),y+i)
 
     def _clear_pause(self):
-        self.win.update_window(" " * len(self.pause_elts["pause_text"]),self.win.conf["center"][0] - len(self.pause_elts["pause_text"])//2,self.win.conf["center"][1]-1)
-        self.win.update_window(" " * len(self.pause_elts["pause_cmds"]),self.win.conf["center"][0] - len(self.pause_elts["pause_cmds"])//2,self.win.conf["center"][1])
+        self.win.update_window(" " * len(self.pause_elts["pause_text"]),self.win.conf["center"][0] - len(self.pause_elts["pause_text"])//2,curses.LINES//3-1)
+        self.win.update_window(" " * len(self.pause_elts["pause_cmds"]),self.win.conf["center"][0] - len(self.pause_elts["pause_cmds"])//2,curses.LINES//3)
         line_length = curses.COLS-1
-        y = curses.LINES//3-4
+        y = curses.LINES//4-4
         for i in range(len(self.pause_elts["p1_cmds"])):
             self.win.update_window(" " * line_length,0,y+i)
 
@@ -146,6 +145,9 @@ class Game:
                     self._move_left(player)
             elif chr(key) == 'o':
                 self._change_state(player,"attacking")
+                if self.player1.pos[0] >= player.pos[0] - int(player.attacking_range):
+                    player.score += 1
+                    self._scored()
             elif chr(key) == 'p':
                 self._change_state(player,"blocking")
                 self.actions.append((self.player2,time.time()))
@@ -156,6 +158,18 @@ class Game:
                 if not self._is_there_player(player,self.player2,1):
                     self._jump_left(player)
     
+    def _scored(self):
+
+        self._clear_player(self.player1)
+        self.player1.pos = (self.scene_start + self.scene.pos_p1,0)
+        self.player1.state = "rest"
+        self._display_player(self.player1)
+
+        self._clear_player(self.player2)
+        self.player2.pos = (self.scene_start + self.scene.pos_p2,0)
+        self.player2.state = "rest"
+        self._display_player(self.player2)
+
     def _buffer_actions(self):
         current = time.time()
         if self.actions:
