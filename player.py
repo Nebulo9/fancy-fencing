@@ -51,10 +51,18 @@ class Player:
         self.body.head.pos = (self.pos[0] - self.body.head.length//2,self.pos[1] + 3)
         if self.player_type == "1":
             self.body.midtop.pos = (self.pos[0],self.pos[1]+2)
+            if self.state == "rest":
+                self.body.sword.pos = (self.pos[0]+2,self.pos[1]+1)
+            else:
+                self.body.sword.pos = (self.pos[0]+2,self.pos[1]+2)
             self.body.midlow.pos = (self.pos[0],self.pos[1]+1)
             self.body.foot.pos = (self.pos[0] - 1,self.pos[1])
         else:
-            self.body.midtop.pos = (self.pos[0] - 2,self.pos[1]+2)
+            self.body.midtop.pos = (self.pos[0] - 1,self.pos[1]+2)
+            if self.state == "rest":
+                self.body.sword.pos = (self.pos[0]-2,self.pos[1]+1)
+            else:
+                self.body.sword.pos = (self.pos[0]-2,self.pos[1]+2)
             self.body.midlow.pos = (self.pos[0],self.pos[1]+1)
             self.body.foot.pos = (self.pos[0],self.pos[1])
 
@@ -66,10 +74,12 @@ class Body:
         self.__midlow = BodyPart((pos[0],pos[1]+1),"|")
         if(self.player_type == "1"):
             self.__foot = BodyPart((pos[0]-1,pos[1]),"/|")
-            self.__midtop = BodyPart((pos[0],pos[1]+2),"|_/")
+            self.__midtop = BodyPart((pos[0],pos[1]+2),"|_")
+            self.__sword = BodyPart((pos[0]+2,pos[1]+1),"\\")
         else:
             self.__foot = BodyPart((pos[0],pos[1]),"|\\")
-            self.__midtop = BodyPart((pos[0]-2,pos[1]+2),"\\_|")
+            self.__midtop = BodyPart((pos[0]-1,pos[1]+2),"_|")
+            self.__sword = BodyPart((pos[0]-2,pos[1]+1),"/")
     @property
     def player_type(self):
         return copy.copy(self.__type)
@@ -85,24 +95,34 @@ class Body:
     @property
     def midtop(self):
         return self.__midtop
-    @midtop.setter
-    def midtop(self,midtop):
-        self.__midtop = midtop
+    @property
+    def sword(self):
+        return self.__sword
+    @sword.setter
+    def sword(self,sword):
+        self.__sword = sword
     
     def change(self,state):
         """Changes the value of the midtop part string depending on the state"""
         if state == "rest":
             if self.player_type == "1":
-                self.midtop.part = "|_/"
+                self.sword.pos = (self.midlow.pos[0]+2,self.midlow.pos[1])
+                self.sword.part = "\\"
             else:
-                self.midtop.part = "\\_|"
+                self.sword.pos = (self.midlow.pos[0]-2,self.midlow.pos[1])
+                self.sword.part = "/"
         elif state == "attacking":
             if self.player_type == "1":
-                self.midtop.part = "|__"
+                self.sword.pos = (self.midtop.pos[0]+2,self.midtop.pos[1])
             else:
-                self.midtop.part = "__|"
+                self.sword.pos = (self.midtop.pos[0]-2,self.midtop.pos[1])
+            self.sword.part = "_"
         elif state == "blocking":
-            self.midtop.part = "|_|"
+            if self.player_type == "1":
+                self.sword.pos = (self.midtop.pos[0]+2,self.midtop.pos[1])
+            else:
+                self.sword.pos = (self.midtop.pos[0]-2,self.midtop.pos[1])
+            self.sword.part = "|"
 
 class BodyPart:
     def __init__(self,pos,part):

@@ -91,11 +91,11 @@ class Game:
         self.win.update_window(player.body.foot.part,player.body.foot.pos[0],base_y-player.body.foot.pos[1])
         self.win.update_window(player.body.midlow.part,player.body.midlow.pos[0],base_y-player.body.midlow.pos[1])
         if player.player_type == "1":
-            self.win.update_window(player.body.midtop.part[:-1],player.body.midtop.pos[0],base_y-player.body.midtop.pos[1])
-            self.win.update_window(player.body.midtop.part[-1],player.body.midtop.pos[0] + player.body.midtop.length-1,base_y-player.body.midtop.pos[1],curses.color_pair(2))
+            self.win.update_window(player.body.midtop.part,player.body.midtop.pos[0],base_y-player.body.midtop.pos[1])
+            self.win.update_window(player.body.sword.part,player.body.sword.pos[0],base_y-player.body.sword.pos[1],curses.color_pair(2))
         else:
-            self.win.update_window(player.body.midtop.part[0],player.body.midtop.pos[0],base_y-player.body.midtop.pos[1],curses.color_pair(3))
-            self.win.update_window(player.body.midtop.part[1:],player.body.midtop.pos[0]+1,base_y-player.body.midtop.pos[1])
+            self.win.update_window(player.body.midtop.part,player.body.midtop.pos[0],base_y-player.body.midtop.pos[1])
+            self.win.update_window(player.body.sword.part,player.body.sword.pos[0],base_y-player.body.sword.pos[1],curses.color_pair(3))
         self.win.update_window(player.body.head.part,player.body.head.pos[0],base_y-player.body.head.pos[1])
 
     def _clear_player(self,player):
@@ -104,7 +104,12 @@ class Game:
         self.win.update_window(" " * player.body.midlow.length,player.body.midlow.pos[0],y=base_y-player.body.midlow.pos[1])
         self.win.update_window(" " * player.body.midtop.length,player.body.midtop.pos[0],y=base_y-player.body.midtop.pos[1])
         self.win.update_window(" " * player.body.head.length,player.body.head.pos[0],y=base_y-player.body.head.pos[1])
-    
+        self._clear_sword(player)
+
+    def _clear_sword(self,player):
+        base_y = curses.LINES-2
+        self.win.update_window(" ",player.body.sword.pos[0],y=base_y-player.body.sword.pos[1])
+
     def _diplay_start(self,start_pos_scene):
         time.sleep(self.fps)
         # Scene
@@ -137,7 +142,7 @@ class Game:
                     self._move_left(player)
             elif chr(key) == 'z':
                 self._change_state(player,"attacking")
-                self.actions.append((player,))
+                self.actions.append((player,time.time()))
             elif chr(key) == 's':
                 self._change_state(player,"blocking")
                 self.actions.append((self.player1,time.time()))
@@ -156,7 +161,7 @@ class Game:
                     self._move_left(player)
             elif chr(key) == 'o':
                 self._change_state(player,"attacking")
-                self.actions.append((player,))
+                self.actions.append((player,time.time()))
             elif chr(key) == 'p':
                 self._change_state(player,"blocking")
                 self.actions.append((self.player2,time.time()))
@@ -321,6 +326,8 @@ class Game:
         config.save(conf)
 
     def _change_state(self, player,state):
+        if (player.state != "rest" and state == "rest") or (player.state == "rest" and state != "rest"):
+            self._clear_sword(player)
         player.state = state
         self._display_player(player)
 
