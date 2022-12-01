@@ -12,6 +12,9 @@ python3 main.py fps [save_file]
 `fps` correspond au nombre d'images par secondes affichées par le jeu
 `save_file` est optionnel et correspond au fichier à charger pour reprendre une partie préalablement sauvegardée.
 
+## Scène
+Lorsque le programme se lance, celui-ci va chercher à récupérer un format de scène dans un fichier d'extension `.ffscene` (par défaut (`default.ffscene`). Ce format est ensuite testé afin de déterminer si celui-ci est conforme puis est utilisé pour créer une instance de classe `Scene` contenant les positions des joueurs, des obstacles et la longueur.
+
 ## Contrôles
 | Touches                | Action                                        |
 | ---------------------- | --------------------------------------------- |
@@ -33,3 +36,6 @@ Les joueurs possèdent les caractéristiques suivantes:
 - `defending_range`: portée du bouclier pour contrer une attaque
 - `blocking_time`: délai pendant lequel un joueur peut rester en mode "défense"
 Ces caractéristiques sont modifiables dans un fichier propre à chaque joueur (`p1.ffplayer` ou `p2.ffplayer`) ou dans les fichiers de sauvegarde créés.
+
+## Sauvegarde de la partie
+Lorsque la partie est en pause, il est possible de la sauvegarder comme mentionné plus tôt, cette sauvegarde reprend la forme de la scène, les caractéristiques des joueurs, leurs positions respectives ainsi que le score. Toutes ces données sont stockées dans un fichier de format `save_%J%-%M%-%A%_%h%-%m%-%s%`.ffsave qu'il est possible d'appeler en paramètre de lancement du programme afin de reprendre la partie.
