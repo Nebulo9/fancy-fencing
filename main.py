@@ -9,7 +9,7 @@ if __name__ == "__main__":
         if fps and fps > 0:
             if len(sys.argv) == 3:
                 save_filename = sys.argv[2]
-                g = game.Game(fps,"./p1.ffplayer","./p2.ffplayer","./default.ffscene",save_filename)
+                g = game.Game(fps,save_file=save_filename)
             else:
                 g = game.Game(fps,"./p1.ffplayer","./p2.ffplayer","./default.ffscene")
             g.start()

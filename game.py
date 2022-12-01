@@ -2,18 +2,24 @@ import time
 import window
 import curses
 import config
+import scene
+import player
 import threading
 
 class Game:
-    def __init__(self,fps,player1_file,player2_file,scene_file="",save_file=""):
-        self.__scene = config.load_scene(scene_file)
-        self.__player1 = config.load_player(player1_file)
-        self.__player2 = config.load_player(player2_file)
+    def __init__(self,fps,player1_file="",player2_file="",scene_file="",save_file=""):
         self.__fps = 1/fps
         self.__actions = []
         if save_file != "":
             self.__loaded_from_save = True
-            self.__saved_conf = config.load_save(save_file)
+            conf = config.load_save(save_file)
+            self.__scene = scene.Scene(conf["scene"]["current"])
+            self.__player1 = player.Player("1",conf["player1"]["movement_speed"],conf["player1"]["attacking_range"],conf["player1"]["defending_range"],conf["player1"]["blocking_time"],pos=tuple(conf["player1"]["pos"]),score=conf["player1"]["score"])
+            self.__player2 = player.Player("2",conf["player2"]["movement_speed"],conf["player2"]["attacking_range"],conf["player2"]["defending_range"],conf["player2"]["blocking_time"],pos=tuple(conf["player2"]["pos"]),score=conf["player2"]["score"])
+        else:
+            self.__scene = config.load_scene(scene_file)
+            self.__player1 = config.load_player(player1_file)
+            self.__player2 = config.load_player(player2_file)
         self.__pause_elts = {"pause_text":"PAUSE","pause_cmds":"B: Resume - G: Quit - J: Save","p1_cmds":("Player 1","Q/D: Move left/right","A/E: Jump right/left","Z/S: Attack/Block"),"p2_cmds":("Player 2","LEFT_A/RIGHT_A: Move left/right","L/M: Jump right/left","O/P: Attack/Block")}
     
     def start(self):
@@ -286,11 +292,33 @@ class Game:
         self._display_player(player)
 
     def _save(self):
+        pos_p1 = self.player1.pos[0] - self.scene_start
+        pos_p2 = self.player2.pos[0] - self.scene_start
+        current_pattern = self.scene.pattern.replace("1","_").replace("2","_")
+        current_pattern = current_pattern[:pos_p1] + "1" + current_pattern[pos_p1+1:pos_p2] + "2" + current_pattern[pos_p2+1:]
         conf  = {
-            "scene": {"length": self.scene.length, "obs": self.scene.pos_obs},
-            "player1": {""}
+            "scene": {
+                "base":self.scene.pattern,
+                "current":current_pattern
+            },
+            "player1": {
+                "movement_speed": self.player1.movement_speed,
+                "attacking_range": self.player1.attacking_range,
+                "defending_range": self.player1.defending_range,
+                "blocking_time": self.player1.blocking_time,
+                "pos": self.player1.pos,
+                "score": self.player1.score
+            },
+            "player2": {
+                "movement_speed": self.player2.movement_speed,
+                "attacking_range": self.player2.attacking_range,
+                "defending_range": self.player2.defending_range,
+                "blocking_time": self.player2.blocking_time,
+                "pos": self.player2.pos,
+                "score": self.player2.score
+            },
         }
-        pass
+        config.save(conf)
 
     def _change_state(self, player,state):
         player.state = state

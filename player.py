@@ -1,15 +1,15 @@
 import copy
 class Player:
-    def __init__(self,_type,movement_speed,attacking_range,defending_range,blocking_time):
+    def __init__(self,_type,movement_speed,attacking_range,defending_range,blocking_time,pos=(0,0),score=0):
         self.__type = _type
         self.__ms = movement_speed
         self.__ar = attacking_range
         self.__dr = defending_range
         self.__bt = blocking_time
         self.__state = "rest"
-        self.__pos = (0,0)
+        self.__pos = pos
         self.__body = Body(self.player_type,self.pos)
-        self.__score = 0
+        self.__score = score
 
     @property
     def player_type(self):

@@ -44,18 +44,18 @@ def load_player(filename):
     return player.Player(p["player_type"],p["movement_speed"],p["attacking_range"],p["defending_range"],p["blocking_time"])
 
 def load_save(filename):
+    conf = {}
     try:
         pattern = re.compile(r'\.ffsave$')
         if not re.search(pattern,filename): raise exceptions.InvalidPattern("Wrong file format.\nStopping...")
         if not os.path.exists(filename): raise exceptions.FileNotExists(f"{filename} does not exist.\nStopping...")
-        conf = {}
         with open(filename,"r") as instream:
             conf = json.load(instream)
-        return conf
     except (exceptions.InvalidPattern,exceptions.FileNotExists) as e:
         print(e)
     except json.JSONDecodeError:
         print(f"Wrong syntax in {filename}, must be written like JSON.\nLoading a new game...")
+    return conf
 
 def save(conf):
     filename = "save_" + time.strftime("%d-%m-%y_%H-%M-%S",time.localtime()) + ".ffsave"
