@@ -10,6 +10,7 @@ class Game:
         self.__player1 = config.load_player(player1_file)
         self.__player2 = config.load_player(player2_file)
         self.__fps = 1/fps
+        self.__actions = []
         if save_file != "":
             self.__loaded_from_save = True
             self.__saved_conf = config.load_save(save_file)
@@ -29,6 +30,9 @@ class Game:
                 # Obstacles
                 for i in self.obs:
                     self.win.update_window("x",i,curses.LINES-2)
+                t3 = threading.Thread(target=self._buffer_actions)
+                t3.start()
+                t3.join()
                 key = self.win.win.getch()
                 t1 = threading.Thread(target=self._action,args=(self.player1,key))
                 t2 = threading.Thread(target=self._action,args=(self.player2,key))
@@ -48,6 +52,7 @@ class Game:
                     t2.start()
                     t1.join()
                     t2.join()
+                    t3.join()
         except Exception as e:
             self.end()
             print(e)
@@ -125,6 +130,7 @@ class Game:
                 self._change_state(player,"attacking")
             elif chr(key) == 's':
                 self._change_state(player,"blocking")
+                self.actions.append((self.player1,time.time()))
             elif chr(key) == 'e':
                 if not self._is_there_player(player,self.player2,1):
                     self._jump_right(player)
@@ -142,12 +148,23 @@ class Game:
                 self._change_state(player,"attacking")
             elif chr(key) == 'p':
                 self._change_state(player,"blocking")
+                self.actions.append((self.player2,time.time()))
             elif chr(key) == 'm':
                 if not self._is_there_player(player,self.player2,1):
                     self._jump_right(player)
             elif chr(key) == 'l':
                 if not self._is_there_player(player,self.player2,1):
                     self._jump_left(player)
+    
+    def _buffer_actions(self):
+        current = time.time()
+        if self.actions:
+            for action in self.actions:
+                player = action[0]
+                if player.state == "blocking":
+                    if current - action[1] >= player.blocking_time:
+                        self._change_state(player,"rest")
+                        self.actions.remove(action)
         
     def _is_there_obstacle(self,player,dir):
         if player.player_type == "1":
@@ -238,7 +255,6 @@ class Game:
         pass
 
     def _change_state(self, player,state):
-        time.sleep(self.fps)
         player.state = state
         self._display_player(player)
 
@@ -293,3 +309,9 @@ class Game:
     @pause_elts.setter
     def pause_elts(self,pause_elts):
         self.__pause_elts = pause_elts
+    @property
+    def actions(self):
+        return self.__actions
+    @actions.setter
+    def actions(self,actions):
+        self.__actions = actions
