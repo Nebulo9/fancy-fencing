@@ -32,7 +32,6 @@ class Game:
                     self.win.update_window("x",i,curses.LINES-2)
                 t3 = threading.Thread(target=self._buffer_actions)
                 t3.start()
-                t3.join()
                 key = self.win.win.getch()
                 t1 = threading.Thread(target=self._action,args=(self.player1,key))
                 t2 = threading.Thread(target=self._action,args=(self.player2,key))
@@ -52,6 +51,7 @@ class Game:
                     t2.start()
                     t1.join()
                     t2.join()
+                    t3.join()
         except Exception as e:
             self.end()
             print(e)
@@ -116,6 +116,10 @@ class Game:
         # Player 2
         self.player2.pos = (start_pos_scene + self.scene.pos_p2,0)
         self._display_player(self.player2)
+
+        # Score
+        score_text = str(self.player1.score) + " | " + str(self.player2.score)
+        self.win.update_window(score_text,curses.COLS//2 - len(score_text)//2,2*curses.LINES//3)
     
     def _action(self,player,key):
         if player.player_type == "1":
@@ -127,6 +131,7 @@ class Game:
                     self._move_left(player)
             elif chr(key) == 'z':
                 self._change_state(player,"attacking")
+                self.actions.append((player,))
             elif chr(key) == 's':
                 self._change_state(player,"blocking")
                 self.actions.append((self.player1,time.time()))
@@ -145,9 +150,7 @@ class Game:
                     self._move_left(player)
             elif chr(key) == 'o':
                 self._change_state(player,"attacking")
-                if self.player1.pos[0] >= player.pos[0] - int(player.attacking_range):
-                    player.score += 1
-                    self._scored()
+                self.actions.append((player,))
             elif chr(key) == 'p':
                 self._change_state(player,"blocking")
                 self.actions.append((self.player2,time.time()))
@@ -158,8 +161,16 @@ class Game:
                 if not self._is_there_player(player,self.player2,1):
                     self._jump_left(player)
     
-    def _scored(self):
+    def _scored(self,text=""):
+        # Score
+        self.win.update_window(" " * (curses.COLS-1),0,2*curses.LINES//3)
+        score_text = str(self.player1.score) + " | " + str(self.player2.score)
+        self.win.update_window(score_text,curses.COLS//2 - len(score_text)//2,2*curses.LINES//3,curses.A_BOLD)
 
+        self.actions = []
+
+        self.win.update_window(text,self.win.conf["center"][0] - len(text)//2,curses.LINES//3)
+        time.sleep(1)
         self._clear_player(self.player1)
         self.player1.pos = (self.scene_start + self.scene.pos_p1,0)
         self.player1.state = "rest"
@@ -170,6 +181,8 @@ class Game:
         self.player2.state = "rest"
         self._display_player(self.player2)
 
+        self.win.update_window(" " * (curses.COLS-1),0,curses.LINES//3)
+
     def _buffer_actions(self):
         current = time.time()
         if self.actions:
@@ -179,6 +192,17 @@ class Game:
                     if current - action[1] >= player.blocking_time:
                         self._change_state(player,"rest")
                         self.actions.remove(action)
+                elif player.state == "attacking":
+                    if player.player_type == "1":
+                        if self.player2.pos[0]-2 - self.player2.defending_range <= player.pos[0] + int(player.attacking_range) and self.player2.state != "blocking":
+                            player.score += 1
+                            self._scored("Player 1 scored!")
+                    else:
+                        if self.player1.pos[0]+2 + self.player1.defending_range >= player.pos[0] - int(player.attacking_range) and self.player1.state != "blocking":
+                            player.score += 1
+                            self._scored("Player 2 scored!")
+
+                        
         
     def _is_there_obstacle(self,player,dir):
         if player.player_type == "1":
@@ -192,8 +216,8 @@ class Game:
 
     def _is_there_player(self,player,target,dir):
         if dir > 0:
-            return ((player.body.head.pos[0] + player.body.head.length) == target.body.head.pos[0])
-        return (player.body.head.pos[0] == (target.body.head.pos[0] + target.body.head.length))
+            return ((player.body.head.pos[0] + 1 + player.body.head.length) == target.body.head.pos[0])
+        return (player.body.head.pos[0] - 1 == (target.body.head.pos[0] + target.body.head.length))
             
     def _move_right(self,player):
         time.sleep(self.fps*player.movement_speed)
