@@ -115,13 +115,13 @@ class Body:
             if self.player_type == "1":
                 self.sword.pos = (self.midtop.pos[0]+2,self.midtop.pos[1])
             else:
-                self.sword.pos = (self.midtop.pos[0]-2,self.midtop.pos[1])
+                self.sword.pos = (self.midtop.pos[0]-1,self.midtop.pos[1])
             self.sword.part = "_"
         elif state == "blocking":
             if self.player_type == "1":
                 self.sword.pos = (self.midtop.pos[0]+2,self.midtop.pos[1])
             else:
-                self.sword.pos = (self.midtop.pos[0]-2,self.midtop.pos[1])
+                self.sword.pos = (self.midtop.pos[0]-1,self.midtop.pos[1])
             self.sword.part = "|"
 
 class BodyPart:
