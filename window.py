@@ -4,6 +4,7 @@ class GWin:
     def __init__(self,__color_pairs):
         self.__color_pairs = __color_pairs
         self.__win = curses.initscr()
+        curses.resize_term(30,120)
     
     def create(self):
         self.__start_session()
